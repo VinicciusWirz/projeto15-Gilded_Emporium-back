@@ -8,8 +8,6 @@ export async function getProducts(req, res) {
   const filter = searchQuery ? regexFilter(searchTerms) : {};
   try {
     const products = await db.collection("products").find(filter).toArray();
-    console.log(filter);
-    console.log(searchTerms);
     res.status(200).send(products);
   } catch (error) {
     res.status(500).send(error.message);
