@@ -26,6 +26,7 @@ export async function getProducts(req, res) {
 
 export async function getProductInfo(req, res) {
   const id = req.params.id;
+  if (!id) return res.status(422).send("Missing product ID");
   try {
     const products = await db
       .collection("products")
