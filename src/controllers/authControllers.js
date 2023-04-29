@@ -1,6 +1,7 @@
 import { db } from "../database/databaseConnection.js";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
+import { ObjectId } from "bson";
 
 export async function signUp(req, res) {
   const { name, email, password } = req.body;
@@ -16,19 +17,17 @@ export async function signUp(req, res) {
 }
 
 export async function signIn(req, res) {
-  const emailInUse = res.locals.user;
+  const { _id, email, name } = res.locals.user;
 
   try {
-    const user = await db.collection("users").findOne({ email });
-
-    if (!email || !password) return res.status(422).send("Dados inválidos!");
-
     const token = uuidv4();
 
-    await db.collection("sessions").insertOne({ token, userId: user._id });
+    await db
+      .collection("sessions")
+      .insertOne({ token, userId: new ObjectId(_id) });
 
-    res.status(200).send(token, emailInUse.name, emailInUse.email);
+    res.status(200).send({ token, name, email });
   } catch (err) {
-    res.sendStatus(500);
+    res.status(500).send(err.message);
   }
 }

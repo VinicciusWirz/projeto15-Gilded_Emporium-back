@@ -4,15 +4,12 @@ import { db } from "../database/databaseConnection.js";
 
 export async function signUpMiddleware(req, res, next) {
   const user = req.body;
-
+  const { error } = userSchema.validate(user, { abortEarly: false });
+  if (error) {
+    const errorLog = error.details.map((err) => err.message);
+    return res.status(422).send(errorLog);
+  }
   try {
-    const { error } = userSchema.validate(user, { abortEarly: false });
-
-    if (error) {
-      const errors = error.details.map((err) => err.message);
-      return res.status(422).send(errors);
-    }
-
     const checkUser = await db
       .collection("users")
       .findOne({ email: user.email });
@@ -25,9 +22,9 @@ export async function signUpMiddleware(req, res, next) {
   }
 }
 
-export async function signInMiddleware(req, res) {
+export async function signInMiddleware(req, res, next) {
   const { email, password } = req.body;
-
+  if (!email || !password) return res.status(422).send("Dados inválidos!");
   try {
     const userExist = await db.collection("users").findOne({ email });
 
