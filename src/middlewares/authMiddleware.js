@@ -41,3 +41,22 @@ export async function signInMiddleware(req, res, next) {
     res.sendStatus(500);
   }
 }
+
+export async function authValidation(req, res, next) {
+  const { authorization } = req.headers;
+  if (!authorization) return res.sendStatus(401);
+  const token = authorization.replace("Bearer ", "");
+
+  try {
+    const session = await db.collection("sessions").findOne({ token });
+    if (!session) return res.sendStatus(401);
+    const user = await db.collection("users").findOne({ _id: session.userId });
+    if (!user) return res.status(404).send("User does not exist");
+
+    res.locals.session = session;
+
+    next();
+  } catch (error) {
+    res.status(500).send(err.message);
+  }
+}

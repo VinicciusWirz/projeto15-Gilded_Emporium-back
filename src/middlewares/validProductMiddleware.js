@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { db } from "../database/databaseConnection.js";
 
 export async function validProductMiddleware(req, res, next) {
-  const _id = req.params.id;
+  const _id = req.body.productId || req.params.id;
   if (!_id) return res.status(401).send("Missing id");
   if (!ObjectId.isValid(_id)) return res.sendStatus(400);
   try {

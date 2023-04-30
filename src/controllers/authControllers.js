@@ -21,12 +21,11 @@ export async function signIn(req, res) {
 
   try {
     const token = uuidv4();
+    const userId = new ObjectId(_id);
+    await db.collection("sessions").insertOne({ token, userId });
+    const cart = await db.collection("carts").find({ userId }).toArray();
 
-    await db
-      .collection("sessions")
-      .insertOne({ token, userId: new ObjectId(_id) });
-
-    res.status(200).send({ token, name, email });
+    res.status(200).send({ token, name, email, cart });
   } catch (err) {
     res.status(500).send(err.message);
   }
