@@ -32,3 +32,41 @@ export async function unloadCart(req, res) {
     res.status(500).send(err.message);
   }
 }
+
+export async function clearCart(req, res) {
+  const session = res.locals.session;
+  try {
+    const result = await db
+      .collection("carts")
+      .deleteMany({ userId: session.userId });
+    res.status(200).send(`${result.deletedCount} items removed`);
+  } catch (error) {
+    res.status(500).send(err.message);
+  }
+}
+
+export async function getCart(req, res) {
+  const session = res.locals.session;
+  try {
+    const clientCart = await db
+      .collection("carts")
+      .find({ userId: session.userId })
+      .toArray();
+    res.status(200).send(clientCart);
+  } catch (error) {
+    res.status(500).send(err.message);
+  }
+}
+
+export async function removeItem(req, res) {
+  const session = res.locals.session;
+  const id = req.params.id;
+  try {
+    const result = await db
+      .collection("carts")
+      .deleteOne({ userId: session.userId, productId: id });
+    res.status(200).send(`${result.deletedCount} items removed`);
+  } catch (error) {
+    res.status(500).send(err.message);
+  }
+}
