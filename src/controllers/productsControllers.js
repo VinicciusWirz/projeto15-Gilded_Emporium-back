@@ -36,3 +36,19 @@ export async function getProductInfo(req, res) {
     res.status(500).send(error.message);
   }
 }
+
+export async function getMany(req, res) {
+  if (!req.headers.filter) return res.sendStatus(422);
+  const products = JSON.parse(req.headers.filter).split(",");
+  const filter = products.map((p) => new ObjectId(p));
+  try {
+    const cart = await db
+      .collection("products")
+      .find({ _id: { $in: filter } })
+      .toArray();
+
+    res.status(200).send(cart);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+}
