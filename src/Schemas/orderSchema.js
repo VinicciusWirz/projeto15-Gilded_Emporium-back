@@ -7,13 +7,12 @@ const productSchema = Joi.object({
   price: Joi.number().min(0).required(),
 });
 
-const schema = Joi.object({
-  userId: Joi.string().required(),
+const orderSchema = Joi.object({
   address: Joi.string().required(),
   name: Joi.string().required(),
   paymentMethod: Joi.string().valid(...paymentMethods).required(),
   complement: Joi.string().optional(),
-  total: Joi.number().min(0).required(),
   products: Joi.array().items(productSchema).min(1).required(),
 });
 
+export default orderSchema;
