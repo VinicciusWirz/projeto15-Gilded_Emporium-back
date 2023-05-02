@@ -16,7 +16,5 @@ router.post("/cart", validProductMiddleware, addToCart);
 router.post("/cart/unload", unloadCart);
 router.delete("/cart/clear", clearCart);
 router.delete("/cart/remove/:id", validProductMiddleware, removeItem);
-router.post("/checkout", () => console.log("Placeholder"));
-router.get("/checkout/orders", () => console.log("Placeholder"));
 
 export default router;
